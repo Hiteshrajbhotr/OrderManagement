@@ -1,0 +1,27 @@
+# Test Environment Configuration
+spring:
+  # Database Configuration (H2 in-memory for testing)
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: ""
+  
+  # JPA Configuration for Testing
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  
+  # H2 Console (disabled for tests)
+  h2:
+    console:
+      enabled: false
+
+# Logging Configuration for Tests
+logging:
+  level:
+    com.example.studentmanagement: WARN
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN

@@ -1,0 +1,25 @@
+# Development Environment Configuration
+spring:
+  # Database Configuration (PostgreSQL - Development)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/student_management_dev
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  
+  # JPA Configuration for Development
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Enable detailed logging for development
+logging:
+  level:
+    com.example.studentmanagement: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

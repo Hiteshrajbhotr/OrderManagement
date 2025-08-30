@@ -1,0 +1,42 @@
+# Application Configuration
+spring:
+  application:
+    name: student-management
+  
+  # Database Configuration (PostgreSQL)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/student_management
+    username: postgres
+    password: Password@123
+    driver-class-name: org.postgresql.Driver
+    
+    # Connection Pool Configuration
+    hikari:
+      connection-timeout: 20000
+      minimum-idle: 5
+      maximum-pool-size: 12
+      idle-timeout: 300000
+      max-lifetime: 1200000
+  
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+# Server Configuration
+server:
+  port: 8080
+
+# Logging Configuration
+logging:
+  level:
+    com.example.studentmanagement: DEBUG
+    org.springframework.web: DEBUG
