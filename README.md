@@ -1,173 +1,53 @@
-# Student Management System - Spring Boot Application
+# Order Management System
 
-A comprehensive Spring Boot application for managing student information with full CRUD operations, search functionality, and data validation.
+A Spring Boot application for managing restaurants, shops, and menu items with role-based authentication and modern web UI.
 
-## Project Structure
+## Overview
 
-```
-StudentManagement/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/example/studentmanagement/
-│   │   │       ├── StudentManagementApplication.java     # Main Spring Boot application
-│   │   │       ├── controller/                          # REST controllers
-│   │   │       │   └── StudentController.java
-│   │   │       ├── service/                             # Business logic
-│   │   │       │   └── StudentService.java
-│   │   │       ├── repository/                          # Data access layer
-│   │   │       │   └── StudentRepository.java
-│   │   │       ├── model/                               # Entity classes
-│   │   │       │   └── Student.java
-│   │   │       ├── dto/                                 # Data Transfer Objects
-│   │   │       │   ├── StudentRequest.java
-│   │   │       │   └── StudentResponse.java
-│   │   │       └── config/                              # Configuration classes
-│   │   │           └── DataInitializer.java
-│   │   └── resources/
-│   │       └── application.properties                   # Application configuration
-│   └── test/
-│       └── java/
-│           └── com/example/studentmanagement/
-│               ├── StudentManagementApplicationTests.java
-│               └── controller/
-│                   └── StudentControllerTest.java
-├── pom.xml                                              # Maven dependencies
-└── README.md
-```
+The Order Management System is a comprehensive web application built with Spring Boot that enables restaurant and shop management. It features role-based access control, shop onboarding, menu management, and modern responsive UI.
 
-## Technologies Used
+### Key Features
+- **Shop Management** - Complete CRUD operations for restaurants and shops
+- **Menu Management** - Menu items with categories and dietary options  
+- **Role-Based Access** - Admin, Shop Owner, and Customer roles
+- **Modern UI** - Responsive design with Bootstrap 5
+- **RESTful API** - Clean REST endpoints for integration
 
-- **Spring Boot 3.2.0**
-- **Java 17**
-- **Maven** (Build tool)
-- **PostgreSQL** (Primary database)
-- **H2 Database** (In-memory database for testing)
-- **Spring Data JPA** (Data persistence)
-- **Spring Web** (REST API)
-- **JUnit 5** (Testing)
-- **HikariCP** (Connection pooling)
+### Technology Stack
+- Spring Boot 3.2.0 with Java 17
+- PostgreSQL database with Spring Data JPA
+- Spring Security for authentication
+- Thymeleaf templating with Bootstrap 5 UI
+- SLF4J logging and Maven build system
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
-- Java 17 or higher
-- Maven 3.6 or higher
-- PostgreSQL 12 or higher
+- Java 17+, Maven 3.6+, PostgreSQL 12+
 
-### Database Setup
-
-#### Option 1: Using Docker (Recommended)
+### Setup & Run
 ```bash
-# Start PostgreSQL using Docker Compose
+# Start PostgreSQL (Docker recommended)
 docker-compose up -d
 
-# This will create:
-# - PostgreSQL database on port 5432
-# - Database: student_management
-# - Username: postgres
-# - Password: password
+# Build and run application
+mvn clean compile
+mvn spring-boot:run
+
+# Access application at http://localhost:8080
 ```
 
-#### Option 2: Local PostgreSQL Installation
-1. **Install PostgreSQL** on your system
-2. **Create databases:**
-   ```sql
-   CREATE DATABASE student_management;
-   CREATE DATABASE student_management_dev;
-   ```
-3. **Update credentials** in `application.properties` if different from defaults
+### Default Test Accounts
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `admin123` |
+| Shop Owner | `shop` | `shop123` |
+| Customer | `customer` | `customer123` |
 
-### Running the Application
+### Key URLs
+- **Login**: http://localhost:8080/auth/login
+- **Admin Dashboard**: http://localhost:8080/admin/dashboard  
+- **Shop Management**: http://localhost:8080/shops
+- **REST API**: http://localhost:8080/api/shops
 
-1. **Clone and navigate to the project directory**
-   ```bash
-   cd EnhancedDatastructure
-   ```
-
-2. **Start PostgreSQL** (using Docker Compose or local installation)
-   ```bash
-   docker-compose up -d  # If using Docker
-   ```
-
-3. **Build the project**
-   ```bash
-   mvn clean compile
-   ```
-
-4. **Run the application**
-   ```bash
-   # Production mode (uses PostgreSQL)
-   mvn spring-boot:run
-   
-   # Development mode (uses PostgreSQL with detailed logging)
-   mvn spring-boot:run -Dspring-boot.run.profiles=dev
-   ```
-
-5. **Access the application**
-   - API Health Check: http://localhost:8080/api/students/health
-   - API Base URL: http://localhost:8080/api/students
-
-### Running Tests
-
-```bash
-mvn test
-```
-
-## Features
-
-- **Complete CRUD Operations** - Create, Read, Update, Delete students
-- **Advanced Search** - Search by name, course, email
-- **Data Validation** - Comprehensive input validation with error messages
-- **Sample Data** - Automatic initialization with sample student data
-- **RESTful API** - Clean REST endpoints with proper HTTP status codes
-- **Unit Testing** - Comprehensive test coverage
-- **H2 Database** - In-memory database with web console for development
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/students/health` | Health check endpoint |
-| `POST` | `/api/students` | Create new student |
-| `GET` | `/api/students` | Get all students |
-| `GET` | `/api/students/{id}` | Get student by ID |
-| `PUT` | `/api/students/{id}` | Update student |
-| `DELETE` | `/api/students/{id}` | Delete student |
-| `GET` | `/api/students/search?name={name}` | Search students by name |
-| `GET` | `/api/students/course/{course}` | Get students by course |
-| `GET` | `/api/students/email/{email}` | Get student by email |
-
-## Sample API Usage
-
-### Create a Student
-```bash
-curl -X POST http://localhost:8080/api/students \
-  -H "Content-Type: application/json" \
-  -d '{
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "john.doe@example.com",
-    "dateOfBirth": "2000-01-15",
-    "phoneNumber": "1234567890",
-    "course": "Computer Science"
-  }'
-```
-
-### Get All Students
-```bash
-curl http://localhost:8080/api/students
-```
-
-### Search Students by Name
-```bash
-curl "http://localhost:8080/api/students/search?name=John"
-```
-
-## Configuration
-
-The application uses H2 in-memory database for development. Configuration can be modified in `src/main/resources/application.properties`.
-
-## Development
-
-This Student Management System provides a complete foundation for managing student information with modern Spring Boot practices and comprehensive API functionality.
+The application automatically initializes with sample data including 5 demo shops with menu items for testing and development.

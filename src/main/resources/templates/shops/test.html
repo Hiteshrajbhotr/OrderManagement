@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Shop Test</title>
+</head>
+<body>
+    <h1>Shop List Test</h1>
+    <div th:if="${shops != null and shops.totalElements > 0}">
+        <p>Total shops: <span th:text="${shops.totalElements}">0</span></p>
+        <div th:each="shop : ${shops.content}">
+            <div>
+                <h3 th:text="${shop.shopName}">Shop Name</h3>
+                <p th:text="${shop.ownerName}">Owner Name</p>
+                <p th:text="${shop.email}">Email</p>
+                <p th:text="${shop.shopType}">Type</p>
+                <p th:text="${shop.status}">Status</p>
+            </div>
+        </div>
+    </div>
+    <div th:if="${shops == null or shops.totalElements == 0}">
+        <p>No shops found</p>
+    </div>
+</body>
+</html>

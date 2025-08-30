@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit} ? 'Edit Customer' : 'Add Customer'">Customer Form - Order Management System</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-shop me-2"></i>
+                Order Management System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/customers}">
+                            <i class="bi bi-people-fill me-1"></i>
+                            Customers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/customers/new}">
+                            <i class="bi bi-person-plus-fill me-1"></i>
+                            Add Customer
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-4">
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-0">
+                    <i th:class="${isEdit} ? 'bi bi-pencil-fill me-2 text-warning' : 'bi bi-person-plus-fill me-2 text-success'"></i>
+                    <span th:text="${isEdit} ? 'Edit Customer' : 'Add New Customer'"></span>
+                </h1>
+                <p class="text-muted mb-0">
+                    <span th:text="${isEdit} ? 'Update customer information' : 'Enter customer details to add to the system'"></span>
+                </p>
+            </div>
+            <a th:href="@{/customers}" class="btn btn-outline-secondary" style="z-index: 1000; position: relative;">
+                <i class="bi bi-arrow-left me-1"></i>
+                Back to Customers
+            </a>
+        </div>
+
+        <!-- Customer Form -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <form th:action="${isEdit} ? '/customers/' + ${customerId} : '/customers'" 
+                              th:object="${customer}" 
+                              method="post" 
+                              novalidate>
+                            
+                            <!-- First Name Field -->
+                            <div class="mb-3">
+                                <label for="firstName" class="form-label">
+                                    <i class="bi bi-person-fill me-1"></i>
+                                    First Name <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('firstName')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="firstName" 
+                                       th:field="*{firstName}" 
+                                       placeholder="Enter customer's first name"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                            </div>
+
+                            <!-- Last Name Field -->
+                            <div class="mb-3">
+                                <label for="lastName" class="form-label">
+                                    <i class="bi bi-person-fill me-1"></i>
+                                    Last Name <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('lastName')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="lastName" 
+                                       th:field="*{lastName}" 
+                                       placeholder="Enter customer's last name"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="bi bi-envelope-fill me-1"></i>
+                                    Email Address <span class="text-danger">*</span>
+                                </label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="email" 
+                                       th:field="*{email}" 
+                                       placeholder="Enter customer's email address"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <!-- Address Fields -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label">
+                                        <i class="bi bi-geo-alt me-1"></i>
+                                        City <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           th:class="${#fields.hasErrors('city')} ? 'form-control is-invalid' : 'form-control'"
+                                           id="city" 
+                                           th:field="*{city}" 
+                                           placeholder="Enter city"
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="state" class="form-label">
+                                        <i class="bi bi-map me-1"></i>
+                                        State <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           th:class="${#fields.hasErrors('state')} ? 'form-control is-invalid' : 'form-control'"
+                                           id="state" 
+                                           th:field="*{state}" 
+                                           placeholder="Enter state"
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="country" class="form-label">
+                                        <i class="bi bi-globe me-1"></i>
+                                        Country <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           th:class="${#fields.hasErrors('country')} ? 'form-control is-invalid' : 'form-control'"
+                                           id="country" 
+                                           th:field="*{country}" 
+                                           placeholder="Enter country"
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('country')}" th:errors="*{country}"></div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="pincode" class="form-label">
+                                        <i class="bi bi-mailbox me-1"></i>
+                                        Pincode <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           th:class="${#fields.hasErrors('pincode')} ? 'form-control is-invalid' : 'form-control'"
+                                           id="pincode" 
+                                           th:field="*{pincode}" 
+                                           placeholder="Enter pincode"
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('pincode')}" th:errors="*{pincode}"></div>
+                                </div>
+                            </div>
+
+                            <!-- Date of Birth Field -->
+                            <div class="mb-3">
+                                <label for="dateOfBirth" class="form-label">
+                                    <i class="bi bi-calendar-fill me-1"></i>
+                                    Date of Birth <span class="text-danger">*</span>
+                                </label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('dateOfBirth')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="dateOfBirth" 
+                                       th:field="*{dateOfBirth}" 
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+                                <div class="form-text">Customer must be at least 16 years old</div>
+                            </div>
+
+                            <!-- Phone Number Field -->
+                            <div class="mb-4">
+                                <label for="phoneNumber" class="form-label">
+                                    <i class="bi bi-telephone-fill me-1"></i>
+                                    Phone Number
+                                </label>
+                                <input type="tel" 
+                                       class="form-control" 
+                                       th:class="${#fields.hasErrors('phoneNumber')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="phoneNumber" 
+                                       th:field="*{phoneNumber}" 
+                                       placeholder="Enter customer's phone number">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/customers}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Cancel
+                                </a>
+                                <button type="submit" 
+                                        th:class="${isEdit} ? 'btn btn-warning' : 'btn btn-success'">
+                                    <i th:class="${isEdit} ? 'bi bi-check-circle me-1' : 'bi bi-plus-circle me-1'"></i>
+                                    <span th:text="${isEdit} ? 'Update Customer' : 'Add Customer'"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Form Help -->
+                <div class="card mt-3 bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Form Guidelines
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li>All fields marked with <span class="text-danger">*</span> are required</li>
+                            <li>Email address must be unique and valid</li>
+                            <li>Customer must be at least 16 years old</li>
+                            <li>Phone number is optional but recommended</li>
+                            <li>Provide complete address information including city, state, country, and pincode</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4">
+        <div class="container text-center">
+            <p class="text-muted mb-0">
+                <i class="bi bi-code-slash me-1"></i>
+                Order Management System &copy; 2024
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/app.js}"></script>
+
+    <script>
+        // Form validation enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const inputs = form.querySelectorAll('input, select');
+            
+            // Add real-time validation feedback
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.checkValidity()) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+                
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('is-invalid') && this.checkValidity()) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

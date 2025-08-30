@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Order Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .dashboard-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        .bg-primary-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .bg-success-gradient { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .bg-warning-gradient { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .bg-info-gradient { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .dashboard-switcher {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .dashboard-switcher:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .dashboard-switcher.active {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-info">
+        <div class="container">
+            <a class="navbar-brand" href="/customer/dashboard">
+                <i class="bi bi-person-fill me-2"></i>
+                Customer Dashboard
+            </a>
+            
+            <!-- Dashboard Switcher -->
+            <div class="navbar-nav mx-auto">
+                <div class="dropdown">
+                    <button class="btn dashboard-switcher dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+                        Switch Dashboard
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/admin/dashboard">
+                            <i class="bi bi-shield-fill me-2"></i>Admin Dashboard
+                        </a></li>
+                        <li><a class="dropdown-item" href="/shop/dashboard">
+                            <i class="bi bi-shop me-2"></i>Shop Dashboard
+                        </a></li>
+                        <li><a class="dropdown-item active" href="/customer/dashboard">
+                            <i class="bi bi-person-fill me-2"></i>Customer Dashboard
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/profile">
+                    <i class="bi bi-person-circle me-1"></i>
+                    Profile
+                </a>
+                <a class="nav-link" href="/logout">
+                    <i class="bi bi-box-arrow-right me-1"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Customer Dashboard</li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h2 class="mb-0">
+                    <i class="bi bi-person-fill me-2"></i>
+                    Customer Dashboard
+                </h2>
+                <p class="text-muted">View and manage customer information</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <!-- Dashboard actions can be added here if needed -->
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-5">
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <div class="stat-icon bg-primary-gradient mx-auto mb-3">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h3 class="card-title" th:text="${totalCustomers ?: 0}">0</h3>
+                        <p class="card-text text-muted">Total Customers</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <div class="stat-icon bg-success-gradient mx-auto mb-3">
+                            <i class="bi bi-person-check-fill"></i>
+                        </div>
+                        <h3 class="card-title" th:text="${activeCustomers ?: 0}">0</h3>
+                        <p class="card-text text-muted">Active Customers</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <div class="stat-icon bg-warning-gradient mx-auto mb-3">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <h3 class="card-title" th:text="${totalLocations ?: 0}">0</h3>
+                        <p class="card-text text-muted">Locations</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <div class="stat-icon bg-info-gradient mx-auto mb-3">
+                            <i class="bi bi-calendar-event-fill"></i>
+                        </div>
+                        <h3 class="card-title" th:text="${recentRegistrations ?: 0}">0</h3>
+                        <p class="card-text text-muted">Recent Registrations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">
+                            <i class="bi bi-lightning-fill me-2"></i>
+                            Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <a href="/customers" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-people-fill me-2"></i>
+                                    View Customers
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/customers/new" class="btn btn-outline-success w-100">
+                                    <i class="bi bi-person-plus-fill me-2"></i>
+                                    Add Customer
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/profile" class="btn btn-outline-info w-100">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    My Profile
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/help" class="btn btn-outline-warning w-100">
+                                    <i class="bi bi-question-circle me-2"></i>
+                                    Help & Support
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Students -->
+        <div class="row">
+            <div class="col">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history me-2"></i>
+                            Recent Customers
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Age</th>
+                                        <th>Registration Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="customer : ${recentCustomers}" th:if="${recentCustomers}">
+                                        <td th:text="${customer.name}">John Doe</td>
+                                        <td th:text="${customer.email}">john@example.com</td>
+                                        <td th:text="${customer.age}">22</td>
+                                        <td th:text="${#temporals.format(customer.registrationDate, 'MMM dd, yyyy')}">Jan 01, 2024</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a th:href="@{/customers/{id}(id=${customer.id})}" class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a th:href="@{/customers/{id}/edit(id=${customer.id})}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:unless="${recentCustomers}">
+                                        <td colspan="5" class="text-center text-muted">No recent customers found</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="/customers" class="btn btn-primary">
+                                View All Customers
+                                <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate statistics cards on load
+            const cards = document.querySelectorAll('.dashboard-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Management | Order Management System</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            padding: 0;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .page-title {
+            margin: 0;
+            font-weight: 600;
+            font-size: 2rem;
+        }
+
+        .page-subtitle {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .search-filters {
+            background: var(--light-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .shop-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .shop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .shop-card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .shop-card-body {
+            padding: 1.5rem;
+        }
+
+        .shop-name {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .shop-owner {
+            color: var(--dark-color);
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .shop-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: var(--info-color);
+            color: white;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .status-pending {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .status-suspended {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .status-inactive {
+            background: var(--dark-color);
+            color: white;
+        }
+
+        .shop-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .page-link {
+            border: none;
+            border-radius: 10px;
+            margin: 0 0.25rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .page-link:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .page-item.active .page-link {
+            background: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+            padding: 1rem 1.5rem;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb-item a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--dark-color);
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1rem;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stats-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem;
+                border-radius: 15px;
+            }
+            
+            .page-header {
+                padding: 1.5rem;
+                border-radius: 15px 15px 0 0;
+            }
+            
+            .content-area {
+                padding: 1.5rem;
+            }
+            
+            .search-filters {
+                padding: 1rem;
+            }
+            
+            .shop-card-header,
+            .shop-card-body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Breadcrumb -->
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb" class="mt-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/admin/dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
+                        <li class="breadcrumb-item active"><i class="bi bi-shop"></i> Shops</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="main-container">
+            <!-- Navigation -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="/dashboard" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                </a>
+                <a href="/shops/new" class="btn btn-light">
+                    <i class="bi bi-plus-circle me-2"></i>Add New Shop
+                </a>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="text-center">
+                    <h1 class="page-title">
+                        <i class="bi bi-shop me-2"></i>
+                        Shop Management
+                    </h1>
+                    <p class="page-subtitle">Manage and monitor all registered shops</p>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Success/Error Messages -->
+                <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span th:text="${successMessage}">Success message</span>
+                </div>
+
+                <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <span th:text="${errorMessage}">Error message</span>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-number" th:text="${totalElements ?: 0}">0</div>
+                            <div class="stats-label">Total Shops</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-number text-success">
+                                <span th:text="${shops.content.size()}">0</span>
+                            </div>
+                            <div class="stats-label">Active Shops</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-number text-warning">0</div>
+                            <div class="stats-label">Pending Approval</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-number text-info">
+                                <span th:text="${totalPages ?: 0}">0</span>
+                            </div>
+                            <div class="stats-label">Total Pages</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="search-filters">
+                    <form method="get" th:action="@{/shops}">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="search" class="form-label">Search Shops</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="search" 
+                                           name="search" 
+                                           th:value="${search}"
+                                           placeholder="Search by name, owner, or email">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-2">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="">All Statuses</option>
+                                    <option th:each="status : ${shopStatuses}" 
+                                            th:value="${status}" 
+                                            th:text="${status.displayName}"
+                                            th:selected="${selectedStatus == status.name()}">
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-2">
+                                <label for="type" class="form-label">Type</label>
+                                <select class="form-select" id="type" name="type">
+                                    <option value="">All Types</option>
+                                    <option th:each="type : ${shopTypes}" 
+                                            th:value="${type}" 
+                                            th:text="${type.displayName}"
+                                            th:selected="${selectedType == type.name()}">
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-2">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="city" 
+                                       name="city" 
+                                       th:value="${selectedCity}"
+                                       placeholder="Filter by city">
+                            </div>
+                            
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="bi bi-funnel"></i> Filter
+                                </button>
+                                <a href="/shops" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Shops List -->
+                <div th:if="${shops != null and shops.totalElements > 0}">
+                    <div class="row">
+                        <div th:each="shop : ${shops.content}" class="col-lg-6 col-xl-4 mb-4">
+                            <div class="card h-100 shop-card">
+                                <div class="card-header d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="card-title mb-1" th:text="${shop.shopName}">Shop Name</h5>
+                                        <p class="text-muted mb-1">
+                                            <i class="bi bi-person me-1"></i>
+                                            <span th:text="${shop.ownerName}">Owner Name</span>
+                                        </p>
+                                        <span class="badge bg-info" th:text="${shop.shopType}">Type</span>
+                                    </div>
+                                    <div>
+                                        <span th:if="${shop.status.name() == 'ACTIVE'}" class="badge bg-success">ACTIVE</span>
+                                        <span th:if="${shop.status.name() == 'PENDING'}" class="badge bg-warning">PENDING</span>
+                                        <span th:if="${shop.status.name() == 'SUSPENDED'}" class="badge bg-danger">SUSPENDED</span>
+                                        <span th:if="${shop.status.name() == 'INACTIVE'}" class="badge bg-secondary">INACTIVE</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <div class="mb-2">
+                                        <i class="bi bi-envelope me-2"></i>
+                                        <span th:text="${shop.email}">email@example.com</span>
+                                    </div>
+                                    
+                                    <div class="mb-2">
+                                        <i class="bi bi-telephone me-2"></i>
+                                        <span th:text="${shop.phoneNumber}">+1234567890</span>
+                                    </div>
+                                    
+                                    <div class="mb-2">
+                                        <i class="bi bi-geo-alt me-2"></i>
+                                        <span th:text="${shop.city + ', ' + shop.state}">Location</span>
+                                    </div>
+                                    
+                                    <div class="mb-2">
+                                        <i class="bi bi-calendar me-2"></i>
+                                        <small class="text-muted" th:text="${#temporals.format(shop.registrationDate, 'MMM dd, yyyy')}">Date</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="btn-group" role="group">
+                                            <a th:href="@{/shops/{id}(id=${shop.id})}" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            <a th:href="@{/shops/{id}/edit(id=${shop.id})}" class="btn btn-outline-secondary btn-sm">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </a>
+                                        </div>
+                                        <button class="btn btn-outline-danger btn-sm" 
+                                                data-bs-toggle="modal" 
+                                                th:data-bs-target="'#deleteModal' + ${shop.id}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modals -->
+                <div th:each="shop : ${shops.content}">
+                    <div class="modal fade" th:id="'deleteModal' + ${shop.id}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirm Deletion</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete the shop "<strong th:text="${shop.shopName}">Shop Name</strong>"?</p>
+                                    <p class="text-muted">This action cannot be undone.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <form th:action="@{/shops/{id}/delete(id=${shop.id})}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-danger">Delete Shop</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${shops == null or shops.totalElements == 0}" class="empty-state">
+                    <i class="bi bi-shop"></i>
+                    <h3>No Shops Found</h3>
+                    <p>No shops match your current filters. Try adjusting your search criteria or add a new shop.</p>
+                    <a href="/shops/new" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Add First Shop
+                    </a>
+                </div>
+
+                <!-- Pagination -->
+                <nav th:if="${totalPages > 1}" aria-label="Shop pagination">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link" 
+                               th:href="@{/shops(page=${currentPage > 0 ? currentPage - 1 : 0}, size=10)}">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        
+                        <li th:each="pageNum : ${#numbers.sequence(0, totalPages > 0 ? totalPages - 1 : 0)}" 
+                            class="page-item" 
+                            th:classappend="${pageNum == currentPage} ? 'active'">
+                            <a class="page-link" 
+                               th:href="@{/shops(page=${pageNum}, size=10)}"
+                               th:text="${pageNum + 1}">1</a>
+                        </li>
+                        
+                        <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                            <a class="page-link" 
+                               th:href="@{/shops(page=${currentPage < totalPages - 1 ? currentPage + 1 : currentPage}, size=10)}">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Auto-dismiss success alerts
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert-success');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.remove();
+                }, 500);
+            });
+        }, 5000);
+
+        // Search functionality
+        document.getElementById('search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.form.submit();
+            }
+        });
+
+        // Clear search
+        function clearSearch() {
+            document.getElementById('search').value = '';
+            document.getElementById('status').value = '';
+            document.getElementById('type').value = '';
+            document.getElementById('city').value = '';
+            window.location.href = '/shops';
+        }
+    </script>
+</body>
+</html>
