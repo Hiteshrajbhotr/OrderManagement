@@ -35,6 +35,11 @@ spring:
 server:
   port: 8080
 
+# JWT Configuration
+jwt:
+  secret: mySecretKeyForStudentManagementSystemJWTTokenGeneration2024
+  expiration: 86400000 # 24 hours in milliseconds
+
 # Logging Configuration
 logging:
   level:
