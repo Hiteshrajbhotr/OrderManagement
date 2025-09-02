@@ -105,4 +105,10 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     // Search method with pageable support
     Page<Shop> findByShopNameContainingIgnoreCaseOrOwnerNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
             String shopName, String ownerName, String email, Pageable pageable);
+    
+    // Find shop by owner user ID
+    Optional<Shop> findByOwnerUserId(Long ownerUserId);
+    
+    // Check if shop exists for owner user ID
+    boolean existsByOwnerUserId(Long ownerUserId);
 }

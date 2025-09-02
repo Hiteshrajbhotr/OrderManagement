@@ -63,6 +63,12 @@ public class MenuItemService {
     }
     
     @Transactional(readOnly = true)
+    public MenuItem getMenuItemEntityById(Long id) {
+        return menuItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Menu item not found with id: " + id));
+    }
+    
+    @Transactional(readOnly = true)
     public List<MenuItemResponse> getAllMenuItems() {
         return menuItemRepository.findAll().stream()
                 .map(this::convertToResponse)
@@ -256,5 +262,11 @@ public class MenuItemService {
         return menuItemRepository.findByShopId(shopId).stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+    }
+    
+    // Method to get all available menu items as entities (for customer dashboard)
+    @Transactional(readOnly = true)
+    public List<MenuItem> getAllAvailableMenuItems() {
+        return menuItemRepository.findByIsAvailableTrue();
     }
 }

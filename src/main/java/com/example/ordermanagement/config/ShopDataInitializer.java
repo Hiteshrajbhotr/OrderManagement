@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Component
-@Order(2) // Run after UserDataInitializer
+// @Component - Disabled to prevent conflicts with DataInitializer
+// @Order(2) // Run after UserDataInitializer
 public class ShopDataInitializer implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(ShopDataInitializer.class);
@@ -155,55 +155,55 @@ public class ShopDataInitializer implements CommandLineRunner {
         // Create menu items for Pizza Palace (only if shop exists and doesn't have menu items)
         if (pizzaPalace != null && menuItemRepository.findByShopId(pizzaPalace.getId()).isEmpty()) {
             createMenuItem(pizzaPalace, "Margherita Pizza", "Classic pizza with fresh mozzarella, tomatoes, and basil", 
-                          new BigDecimal("14.99"), MenuCategory.MAIN_COURSE, true, true, false, false);
+                          new BigDecimal("14.99"), MenuCategory.MAIN_COURSE, true, true, false, false, null);
             createMenuItem(pizzaPalace, "Pepperoni Pizza", "Traditional pepperoni pizza with mozzarella cheese", 
-                          new BigDecimal("16.99"), MenuCategory.MAIN_COURSE, true, false, false, false);
+                          new BigDecimal("16.99"), MenuCategory.MAIN_COURSE, true, false, false, false, null);
             createMenuItem(pizzaPalace, "Caesar Salad", "Fresh romaine lettuce with parmesan cheese and croutons", 
-                          new BigDecimal("9.99"), MenuCategory.SALAD, true, true, false, false);
+                          new BigDecimal("9.99"), MenuCategory.SALAD, true, true, false, false, null);
             createMenuItem(pizzaPalace, "Tiramisu", "Classic Italian dessert with mascarpone and coffee", 
-                          new BigDecimal("7.99"), MenuCategory.DESSERT, true, true, false, false);
+                          new BigDecimal("7.99"), MenuCategory.DESSERT, true, true, false, false, null);
             createMenuItem(pizzaPalace, "Italian Soda", "Refreshing sparkling water with natural fruit flavors", 
-                          new BigDecimal("3.99"), MenuCategory.BEVERAGE, true, true, true, false);
+                          new BigDecimal("3.99"), MenuCategory.BEVERAGE, true, true, true, false, null);
         }
 
         // Create menu items for Coffee Central (only if shop exists and doesn't have menu items)
         if (coffeeCentral != null && menuItemRepository.findByShopId(coffeeCentral.getId()).isEmpty()) {
             createMenuItem(coffeeCentral, "Espresso", "Rich and bold single shot of premium espresso", 
-                          new BigDecimal("2.99"), MenuCategory.COFFEE, true, true, true, false);
+                          new BigDecimal("2.99"), MenuCategory.COFFEE, true, true, true, false, null);
             createMenuItem(coffeeCentral, "Cappuccino", "Perfect balance of espresso, steamed milk, and foam", 
-                          new BigDecimal("4.99"), MenuCategory.COFFEE, true, true, false, false);
+                          new BigDecimal("4.99"), MenuCategory.COFFEE, true, true, false, false, null);
             createMenuItem(coffeeCentral, "Avocado Toast", "Fresh avocado on artisan sourdough with sea salt", 
-                          new BigDecimal("8.99"), MenuCategory.BREAKFAST, true, true, true, false);
+                          new BigDecimal("8.99"), MenuCategory.BREAKFAST, true, true, true, false, null);
             createMenuItem(coffeeCentral, "Blueberry Muffin", "Freshly baked muffin with organic blueberries", 
-                          new BigDecimal("3.99"), MenuCategory.BREAKFAST, true, true, false, false);
+                          new BigDecimal("3.99"), MenuCategory.BREAKFAST, true, true, false, false, null);
             createMenuItem(coffeeCentral, "Green Smoothie", "Spinach, banana, apple, and coconut water blend", 
-                          new BigDecimal("6.99"), MenuCategory.BEVERAGE, true, true, true, false);
+                          new BigDecimal("6.99"), MenuCategory.BEVERAGE, true, true, true, false, null);
         }
 
         // Create menu items for Sweet Treats Bakery (only if shop exists and doesn't have menu items)
         if (sweetTreats != null && menuItemRepository.findByShopId(sweetTreats.getId()).isEmpty()) {
             createMenuItem(sweetTreats, "Chocolate Croissant", "Buttery croissant filled with premium dark chocolate", 
-                          new BigDecimal("4.99"), MenuCategory.BAKERY, true, true, false, false);
+                          new BigDecimal("4.99"), MenuCategory.BAKERY, true, true, false, false, null);
             createMenuItem(sweetTreats, "Red Velvet Cupcake", "Moist red velvet cake with cream cheese frosting", 
-                          new BigDecimal("3.99"), MenuCategory.DESSERT, true, true, false, false);
+                          new BigDecimal("3.99"), MenuCategory.DESSERT, true, true, false, false, null);
             createMenuItem(sweetTreats, "Artisan Sourdough", "Traditional sourdough bread baked fresh daily", 
-                          new BigDecimal("5.99"), MenuCategory.BAKERY, true, true, true, false);
+                          new BigDecimal("5.99"), MenuCategory.BAKERY, true, true, true, false, null);
             createMenuItem(sweetTreats, "Fruit Tart", "Seasonal fresh fruit on vanilla custard base", 
-                          new BigDecimal("6.99"), MenuCategory.DESSERT, true, true, false, false);
+                          new BigDecimal("6.99"), MenuCategory.DESSERT, true, true, false, false, null);
             createMenuItem(sweetTreats, "Herbal Tea", "Selection of organic herbal teas", 
-                          new BigDecimal("2.99"), MenuCategory.TEA, true, true, true, false);
+                          new BigDecimal("2.99"), MenuCategory.TEA, true, true, true, false, null);
         }
 
         // Create menu items for Quick Bite Express (only if shop exists and doesn't have menu items)
         if (quickBite != null && menuItemRepository.findByShopId(quickBite.getId()).isEmpty()) {
             createMenuItem(quickBite, "Grilled Chicken Wrap", "Healthy grilled chicken with fresh vegetables", 
-                          new BigDecimal("8.99"), MenuCategory.MAIN_COURSE, true, false, false, false);
+                          new BigDecimal("8.99"), MenuCategory.MAIN_COURSE, true, false, false, false, null);
             createMenuItem(quickBite, "Veggie Burger", "Plant-based patty with fresh toppings", 
-                          new BigDecimal("9.99"), MenuCategory.BURGER, true, true, true, false);
+                          new BigDecimal("9.99"), MenuCategory.BURGER, true, true, true, false, null);
             createMenuItem(quickBite, "Sweet Potato Fries", "Crispy baked sweet potato fries with herbs", 
-                          new BigDecimal("4.99"), MenuCategory.SNACK, true, true, true, false);
+                          new BigDecimal("4.99"), MenuCategory.SNACK, true, true, true, false, null);
             createMenuItem(quickBite, "Fresh Fruit Bowl", "Seasonal mixed fruits with honey drizzle", 
-                          new BigDecimal("5.99"), MenuCategory.SNACK, true, true, true, false);
+                          new BigDecimal("5.99"), MenuCategory.SNACK, true, true, true, false, null);
         }
 
         logger.info("Created {} sample shops", shopRepository.count());
@@ -233,7 +233,7 @@ public class ShopDataInitializer implements CommandLineRunner {
 
     private MenuItem createMenuItem(Shop shop, String itemName, String description, BigDecimal price,
                                   MenuCategory category, boolean isAvailable, boolean isVegetarian,
-                                  boolean isVegan, boolean isSpicy) {
+                                  boolean isVegan, boolean isSpicy, String imageUrl) {
         MenuItem menuItem = new MenuItem();
         menuItem.setShop(shop);
         menuItem.setItemName(itemName);
@@ -243,6 +243,7 @@ public class ShopDataInitializer implements CommandLineRunner {
         menuItem.setIsAvailable(isAvailable);
         menuItem.setIsVegetarian(isVegetarian);
         menuItem.setIsVegan(isVegan);
+        menuItem.setImageUrl(imageUrl);
         
         return menuItemRepository.save(menuItem);
     }

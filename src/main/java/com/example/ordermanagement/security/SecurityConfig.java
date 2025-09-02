@@ -3,6 +3,8 @@ package com.example.ordermanagement.security;
 import com.example.ordermanagement.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -28,13 +30,16 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final DynamicPermissionEvaluator dynamicPermissionEvaluator;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, 
                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                         CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
+                         CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
+                         DynamicPermissionEvaluator dynamicPermissionEvaluator) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
+        this.dynamicPermissionEvaluator = dynamicPermissionEvaluator;
     }
 
     @Bean
@@ -53,6 +58,13 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public MethodSecurityExpressionHandler methodSecurityExpressionHandler() {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setPermissionEvaluator(dynamicPermissionEvaluator);
+        return expressionHandler;
     }
 
     @Bean

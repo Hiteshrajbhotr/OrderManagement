@@ -3,6 +3,7 @@ package com.example.ordermanagement.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ public class CustomerRequest {
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
 
-    @Size(max = 20, message = "Phone number cannot exceed 20 characters")
+    @Pattern(regexp = "^(\\+91[\\-\\s]?)?[6-9]\\d{9}$", message = "Please provide a valid Indian mobile number (10 digits starting with 6-9, optionally prefixed with +91)")
     private String phoneNumber;
 
     @Size(max = 100, message = "City cannot exceed 100 characters")

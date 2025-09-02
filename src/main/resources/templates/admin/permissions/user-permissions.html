@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Permission Management - Order Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">
+                <i class="fas fa-shield-alt me-2"></i>Admin Dashboard
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                <a class="nav-link" href="/admin/users">Users</a>
+                <a class="nav-link active" href="/admin/permissions">Permissions</a>
+                <a class="nav-link" href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-users-cog me-2"></i>User Permission Management</h2>
+                    <a href="/admin/permissions" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Permissions
+                    </a>
+                </div>
+
+                <!-- Success/Error Messages -->
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div class="row">
+                    <!-- User Selection -->
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Select User</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group">
+                                    <a th:each="user : ${users}" 
+                                       th:href="@{/admin/permissions/users(userId=${user.id})}"
+                                       th:class="${selectedUser != null and selectedUser.id == user.id} ? 'list-group-item list-group-item-action active' : 'list-group-item list-group-item-action'">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1" th:text="${user.fullName}"></h6>
+                                            <small th:text="${user.role.displayName}"></small>
+                                        </div>
+                                        <p class="mb-1" th:text="${user.email}"></p>
+                                        <small th:text="${user.username}"></small>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Permissions Management -->
+                    <div class="col-md-8" th:if="${selectedUser}">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-user-shield me-2"></i>
+                                    Permissions for <span th:text="${selectedUser.fullName}"></span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Grant New Permission -->
+                                <div class="mb-4">
+                                    <h6><i class="fas fa-plus-circle me-2"></i>Grant New Permission</h6>
+                                    <form th:action="@{/admin/permissions/users/{userId}/grant(userId=${selectedUser.id})}" 
+                                          method="post" class="row g-3">
+                                        <div class="col-md-6">
+                                            <select name="permissionId" class="form-select" required>
+                                                <option value="">Select permission...</option>
+                                                <option th:each="permission : ${permissions}" 
+                                                        th:value="${permission.id}" 
+                                                        th:text="${permission.name + ' (' + permission.resource + ':' + permission.action + ')'}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="datetime-local" name="expiresAt" class="form-control" 
+                                                   placeholder="Expiration (optional)">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-success w-100">
+                                                <i class="fas fa-plus"></i> Grant
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Current Permissions -->
+                                <h6><i class="fas fa-list me-2"></i>Current Permissions</h6>
+                                <div th:if="${userPermissions and not #lists.isEmpty(userPermissions)}">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th>Permission</th>
+                                                    <th>Resource:Action</th>
+                                                    <th>Granted</th>
+                                                    <th>Expires</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="userPermission : ${userPermissions}">
+                                                    <td th:text="${userPermission.permission.name}"></td>
+                                                    <td>
+                                                        <span class="badge bg-info" 
+                                                              th:text="${userPermission.permission.resource + ':' + userPermission.permission.action}">
+                                                        </span>
+                                                    </td>
+                                                    <td th:text="${#temporals.format(userPermission.grantedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                                                    <td>
+                                                        <span th:if="${userPermission.expiresAt}" 
+                                                              th:text="${#temporals.format(userPermission.expiresAt, 'yyyy-MM-dd HH:mm')}">
+                                                        </span>
+                                                        <span th:unless="${userPermission.expiresAt}" class="text-muted">Never</span>
+                                                    </td>
+                                                    <td>
+                                                        <span th:if="${userPermission.isActive and not userPermission.expired}" 
+                                                              class="badge bg-success">Active</span>
+                                                        <span th:if="${userPermission.expired}" 
+                                                              class="badge bg-warning">Expired</span>
+                                                        <span th:if="${not userPermission.isActive}" 
+                                                              class="badge bg-danger">Revoked</span>
+                                                    </td>
+                                                    <td>
+                                                        <form th:if="${userPermission.isActive}" 
+                                                              th:action="@{/admin/permissions/users/{userId}/revoke(userId=${selectedUser.id})}" 
+                                                              method="post" class="d-inline">
+                                                            <input type="hidden" name="permissionId" th:value="${userPermission.permission.id}">
+                                                            <input type="hidden" name="reason" value="Revoked by admin">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                    onclick="return confirm('Are you sure you want to revoke this permission?')">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div th:if="${userPermissions == null or #lists.isEmpty(userPermissions)}" 
+                                     class="text-center py-4">
+                                    <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                                    <h6 class="text-muted">No permissions assigned</h6>
+                                    <p class="text-muted">This user has no custom permissions assigned.</p>
+                                </div>
+
+                                <!-- Bulk Operations -->
+                                <div th:if="${userPermissions and not #lists.isEmpty(userPermissions)}" class="mt-4">
+                                    <h6><i class="fas fa-tasks me-2"></i>Bulk Operations</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <form th:action="@{/admin/permissions/users/{userId}/bulk-grant(userId=${selectedUser.id})}" 
+                                                  method="post">
+                                                <div class="input-group">
+                                                    <select name="permissionIds" class="form-select" multiple required>
+                                                        <option th:each="permission : ${permissions}" 
+                                                                th:value="${permission.id}" 
+                                                                th:text="${permission.name}">
+                                                        </option>
+                                                    </select>
+                                                    <button type="submit" class="btn btn-success">
+                                                        <i class="fas fa-plus"></i> Bulk Grant
+                                                    </button>
+                                                </div>
+                                                <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple</small>
+                                            </form>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <form th:action="@{/admin/permissions/users/{userId}/bulk-revoke(userId=${selectedUser.id})}" 
+                                                  method="post">
+                                                <div class="input-group">
+                                                    <select name="permissionIds" class="form-select" multiple required>
+                                                        <option th:each="userPermission : ${userPermissions}" 
+                                                                th:if="${userPermission.isActive}"
+                                                                th:value="${userPermission.permission.id}" 
+                                                                th:text="${userPermission.permission.name}">
+                                                        </option>
+                                                    </select>
+                                                    <button type="submit" class="btn btn-danger"
+                                                            onclick="return confirm('Are you sure you want to revoke selected permissions?')">
+                                                        <i class="fas fa-times"></i> Bulk Revoke
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" name="reason" value="Bulk revoked by admin">
+                                                <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple</small>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instructions when no user selected -->
+                    <div class="col-md-8" th:unless="${selectedUser}">
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-hand-point-left fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Select a User</h5>
+                                <p class="text-muted">Choose a user from the list on the left to manage their permissions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

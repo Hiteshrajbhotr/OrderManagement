@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component - Disabled to prevent conflicts with DataInitializer
 public class UserDataInitializer implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDataInitializer.class);

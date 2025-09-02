@@ -44,7 +44,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             if (user.isAdmin()) {
                 redirectUrl = "/admin/dashboard";
             } else if (user.isShop()) {
-                redirectUrl = "/shop/dashboard";
+                redirectUrl = "/shops/dashboard";
             } else {
                 redirectUrl = "/customer/dashboard";
             }

@@ -110,6 +110,35 @@
             box-shadow: var(--card-shadow-hover);
         }
 
+        .shop-image-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .shop-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .shop-card:hover .shop-image {
+            transform: scale(1.05);
+        }
+
+        .shop-image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 3rem;
+        }
+
         .shop-card::before {
             content: '';
             position: absolute;
@@ -283,6 +312,43 @@
         .shop-card:nth-child(5) { animation-delay: 0.5s; }
         .shop-card:nth-child(6) { animation-delay: 0.6s; }
 
+        .quick-actions {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 0.75rem;
+        }
+
+        .quick-actions .btn {
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .quick-actions .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .bulk-actions {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .bulk-actions h6 {
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bulk-btn {
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
         @media (max-width: 768px) {
             .main-container {
                 margin: 1rem;
@@ -343,11 +409,51 @@
                 </div>
             </div>
 
+            <!-- Quick Admin Actions -->
+            <div class="bulk-actions" th:if="${shops != null and shops.totalElements > 0}">
+                <h6>
+                    <i class="bi bi-lightning-charge"></i>
+                    Quick Admin Actions
+                </h6>
+                <p class="text-muted mb-3">Manage shop statuses quickly without opening individual shop details.</p>
+                
+                <div class="d-flex flex-wrap">
+                    <!-- Filter by Status Links -->
+                    <a href="/shops?status=PENDING" class="btn btn-outline-warning btn-sm bulk-btn">
+                        <i class="bi bi-clock me-1"></i>View Pending Shops
+                    </a>
+                    <a href="/shops?status=SUSPENDED" class="btn btn-outline-danger btn-sm bulk-btn">
+                        <i class="bi bi-pause-circle me-1"></i>View Suspended Shops
+                    </a>
+                    <a href="/shops?status=ACTIVE" class="btn btn-outline-success btn-sm bulk-btn">
+                        <i class="bi bi-check-circle me-1"></i>View Active Shops
+                    </a>
+                    <a href="/shops" class="btn btn-outline-primary btn-sm bulk-btn">
+                        <i class="bi bi-list me-1"></i>View All Shops
+                    </a>
+                </div>
+                
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Use the "Activate Shop" buttons below each pending shop for quick activation.
+                    </small>
+                </div>
+            </div>
+
             <!-- Shop List -->
             <div th:if="${shops != null and shops.totalElements > 0}">
                 <div class="row g-4">
                     <div th:each="shop : ${shops.content}" class="col-lg-6 col-xl-4">
                         <div class="shop-card fade-in">
+                            <!-- Shop Image -->
+                            <div th:if="${shop.imageUrl}" class="shop-image-container">
+                                <img th:src="${shop.imageUrl}" alt="Shop Image" class="shop-image">
+                            </div>
+                            <div th:unless="${shop.imageUrl}" class="shop-image-placeholder">
+                                <i class="bi bi-shop"></i>
+                            </div>
+                            
                             <div class="card-header">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
@@ -403,6 +509,44 @@
                                     <a th:href="@{/shops/{id}/edit(id=${shop.id})}" class="btn-action btn-secondary-custom">
                                         <i class="bi bi-pencil"></i> Edit
                                     </a>
+                                </div>
+                                
+                                <!-- Quick Status Actions -->
+                                <div class="quick-actions mt-2" th:if="${shop.status.name() != 'ACTIVE'}">
+                                    <form th:if="${shop.status.name() == 'PENDING'}" 
+                                          th:action="@{/shops/{id}/status(id=${shop.id})}" 
+                                          method="post" 
+                                          class="d-inline w-100"
+                                          onsubmit="return confirm('Activate this shop?');">
+                                        <input type="hidden" name="status" value="ACTIVE">
+                                        <button type="submit" class="btn btn-success btn-sm w-100">
+                                            <i class="bi bi-check-circle me-1"></i>Activate Shop
+                                        </button>
+                                    </form>
+                                    
+                                    <form th:if="${shop.status.name() == 'SUSPENDED'}" 
+                                          th:action="@{/shops/{id}/status(id=${shop.id})}" 
+                                          method="post" 
+                                          class="d-inline w-100"
+                                          onsubmit="return confirm('Reactivate this shop?');">
+                                        <input type="hidden" name="status" value="ACTIVE">
+                                        <button type="submit" class="btn btn-warning btn-sm w-100">
+                                            <i class="bi bi-play-circle me-1"></i>Reactivate Shop
+                                        </button>
+                                    </form>
+                                </div>
+                                
+                                <!-- Active Shop Actions -->
+                                <div class="quick-actions mt-2" th:if="${shop.status.name() == 'ACTIVE'}">
+                                    <form th:action="@{/shops/{id}/status(id=${shop.id})}" 
+                                          method="post" 
+                                          class="d-inline w-100"
+                                          onsubmit="return confirm('Suspend this shop? This will temporarily disable it.');">
+                                        <input type="hidden" name="status" value="SUSPENDED">
+                                        <button type="submit" class="btn btn-outline-warning btn-sm w-100">
+                                            <i class="bi bi-pause-circle me-1"></i>Suspend Shop
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

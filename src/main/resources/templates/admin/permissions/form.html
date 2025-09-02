@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit ? 'Edit Permission' : 'Create Permission'} + ' - Order Management System'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">
+                <i class="fas fa-shield-alt me-2"></i>Admin Dashboard
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                <a class="nav-link" href="/admin/users">Users</a>
+                <a class="nav-link active" href="/admin/permissions">Permissions</a>
+                <a class="nav-link" href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-key me-2"></i>
+                            <span th:text="${isEdit ? 'Edit Permission' : 'Create New Permission'}"></span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Success/Error Messages -->
+                        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span th:text="${successMessage}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <span th:text="${errorMessage}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <form th:action="${isEdit ? '/admin/permissions/' + permission.id : '/admin/permissions'}" 
+                              method="post" th:object="${permission}">
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Permission Name *</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" 
+                                       placeholder="e.g., Manage Users" required>
+                                <div class="form-text">A descriptive name for this permission</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" 
+                                          rows="3" placeholder="Describe what this permission allows..."></textarea>
+                                <div class="form-text">Optional description of what this permission grants access to</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="resource" class="form-label">Resource *</label>
+                                        <input type="text" class="form-control" id="resource" th:field="*{resource}" 
+                                               placeholder="e.g., users, shops, orders" required>
+                                        <div class="form-text">The resource this permission applies to</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="action" class="form-label">Action *</label>
+                                        <select class="form-select" id="action" th:field="*{action}" required>
+                                            <option value="">Select an action...</option>
+                                            <option value="view">View</option>
+                                            <option value="create">Create</option>
+                                            <option value="edit">Edit</option>
+                                            <option value="delete">Delete</option>
+                                            <option value="manage">Manage</option>
+                                            <option value="approve">Approve</option>
+                                            <option value="export">Export</option>
+                                            <option value="import">Import</option>
+                                        </select>
+                                        <div class="form-text">The action this permission allows</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Permission Preview -->
+                            <div class="mb-3">
+                                <label class="form-label">Permission String Preview</label>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Full Permission:</strong> 
+                                    <span id="permissionPreview">
+                                        <span th:text="${permission.resource}">resource</span>:<span th:text="${permission.action}">action</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="isActive" th:field="*{isActive}" 
+                                           th:checked="${isEdit ? permission.isActive : true}">
+                                    <label class="form-check-label" for="isActive">
+                                        Active Permission
+                                    </label>
+                                    <div class="form-text">Inactive permissions cannot be assigned to users</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="/admin/permissions" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i>Back to Permissions
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>
+                                    <span th:text="${isEdit ? 'Update Permission' : 'Create Permission'}"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Help Card -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-question-circle me-2"></i>Permission Guidelines</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Common Resources:</h6>
+                                <ul class="list-unstyled">
+                                    <li><code>users</code> - User management</li>
+                                    <li><code>shops</code> - Shop management</li>
+                                    <li><code>orders</code> - Order management</li>
+                                    <li><code>permissions</code> - Permission management</li>
+                                    <li><code>dashboard</code> - Dashboard access</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Common Actions:</h6>
+                                <ul class="list-unstyled">
+                                    <li><code>view</code> - Read access</li>
+                                    <li><code>create</code> - Create new items</li>
+                                    <li><code>edit</code> - Modify existing items</li>
+                                    <li><code>delete</code> - Remove items</li>
+                                    <li><code>manage</code> - Full control</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update permission preview dynamically
+        function updatePreview() {
+            const resource = document.getElementById('resource').value || 'resource';
+            const action = document.getElementById('action').value || 'action';
+            document.getElementById('permissionPreview').textContent = resource + ':' + action;
+        }
+
+        document.getElementById('resource').addEventListener('input', updatePreview);
+        document.getElementById('action').addEventListener('change', updatePreview);
+
+        // Initialize preview on page load
+        document.addEventListener('DOMContentLoaded', updatePreview);
+    </script>
+</body>
+</html>

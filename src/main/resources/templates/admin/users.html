@@ -141,15 +141,9 @@
                                     <small class="text-muted" th:text="'ID: ' + ${user.id}">ID: 1</small>
                                 </td>
                                 <td>
-                                    <form th:action="@{'/admin/users/' + ${user.id} + '/update-role'}" method="post" class="d-inline">
-                                        <select name="role" class="form-select form-select-sm" 
-                                                onchange="this.form.submit()"
-                                                th:disabled="${user.username == 'admin'}">
-                                            <option value="ADMIN" th:selected="${user.role.name() == 'ADMIN'}">Admin</option>
-                                            <option value="TEACHER" th:selected="${user.role.name() == 'TEACHER'}">Teacher</option>
-                                            <option value="CUSTOMER" th:selected="${user.role.name() == 'CUSTOMER'}">Customer</option>
-                                        </select>
-                                    </form>
+                                    <span class="badge" 
+                                          th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-danger' : (${user.role.name() == 'SHOP'} ? 'bg-warning' : 'bg-info')"
+                                          th:text="${user.role.name()}">ADMIN</span>
                                 </td>
                                 <td>
                                     <span class="badge" 

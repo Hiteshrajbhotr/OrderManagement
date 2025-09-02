@@ -137,6 +137,14 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * Find user by username (throws exception if not found)
+     */
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+    }
+
+    /**
      * Get user by email
      */
     public Optional<User> getUserByEmail(String email) {

@@ -5,7 +5,7 @@ spring:
   
   # Database Configuration (PostgreSQL)
   datasource:
-    url: jdbc:postgresql://localhost:5432/student_management
+    url: jdbc:postgresql://localhost:5432/order_management
     username: postgres
     password: Password@123
     driver-class-name: org.postgresql.Driver
@@ -22,7 +22,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -30,15 +30,28 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+  
+  # File Upload Configuration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 # Server Configuration
 server:
   port: 8080
+  address: 0.0.0.0
 
 # JWT Configuration
 jwt:
   secret: mySecretKeyForStudentManagementSystemJWTTokenGeneration2024
   expiration: 86400000 # 24 hours in milliseconds
+
+
+# Application specific configuration
+app:
+  upload:
+    dir: uploads
 
 # Logging Configuration
 logging:

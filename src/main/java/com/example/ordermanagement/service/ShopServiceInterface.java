@@ -91,4 +91,9 @@ public interface ShopServiceInterface {
     boolean isShopNameAvailableInCity(String shopName, String city);
     
     ShopResponse getShopByEmail(String email);
+    
+    // User-Shop relationship operations
+    ShopResponse getShopByOwnerUserId(Long userId);
+    
+    boolean userOwnsShop(Long userId);
 }

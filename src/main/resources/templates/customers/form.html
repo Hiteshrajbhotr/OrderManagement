@@ -221,7 +221,7 @@
                                        th:class="${#fields.hasErrors('phoneNumber')} ? 'form-control is-invalid' : 'form-control'"
                                        id="phoneNumber" 
                                        th:field="*{phoneNumber}" 
-                                       placeholder="Enter customer's phone number">
+                                       placeholder="9876543210 or +91 9876543210">
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
                             </div>
 

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit ? 'Edit Menu Item' : 'Add Menu Item'} + ' - Order Management System'">Menu Item Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+        .dietary-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .form-check-custom {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .form-check-custom:hover {
+            background: #e9ecef;
+        }
+        .btn-back {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            border: none;
+            color: white;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/shop/dashboard">
+                <i class="bi bi-shop me-2"></i>
+                Shop Dashboard
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/shop/dashboard">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="form-container">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/shop/dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${isEdit ? 'Edit Menu Item' : 'Add Menu Item'}">Menu Item Form</li>
+                </ol>
+            </nav>
+
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-menu-button-wide-fill me-2"></i>
+                    <span th:text="${isEdit ? 'Edit Menu Item' : 'Add New Menu Item'}">Menu Item Form</span>
+                </h2>
+                <a href="/shop/dashboard" class="btn btn-back">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>
+                <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Menu Item Form -->
+            <div class="card">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Menu Item Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="${isEdit ? '/shop/menu-items/' + menuItemId + '/update' : '/shop/menu-items/add'}" 
+                          method="post" 
+                          th:object="${menuItem}" 
+                          enctype="multipart/form-data">
+                        
+                        <div class="row">
+                            <!-- Left Column -->
+                            <div class="col-md-6">
+                                <!-- Item Name -->
+                                <div class="mb-3">
+                                    <label for="itemName" class="form-label">
+                                        <i class="bi bi-tag me-1"></i>
+                                        Item Name *
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="itemName" 
+                                           th:field="*{itemName}"
+                                           placeholder="Enter item name"
+                                           required>
+                                    <div th:if="${#fields.hasErrors('itemName')}" class="text-danger small mt-1">
+                                        <span th:errors="*{itemName}"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Price -->
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">
+                                        <i class="bi bi-currency-dollar me-1"></i>
+                                        Price *
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="price" 
+                                               th:field="*{price}"
+                                               step="0.01"
+                                               min="0.01"
+                                               placeholder="0.00"
+                                               required>
+                                    </div>
+                                    <div th:if="${#fields.hasErrors('price')}" class="text-danger small mt-1">
+                                        <span th:errors="*{price}"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Category -->
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">
+                                        <i class="bi bi-grid me-1"></i>
+                                        Category *
+                                    </label>
+                                    <select class="form-select" id="category" th:field="*{category}" required>
+                                        <option value="">Select Category</option>
+                                        <option value="APPETIZER">Appetizer</option>
+                                        <option value="MAIN_COURSE">Main Course</option>
+                                        <option value="DESSERT">Dessert</option>
+                                        <option value="BEVERAGE">Beverage</option>
+                                        <option value="SNACK">Snack</option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('category')}" class="text-danger small mt-1">
+                                        <span th:errors="*{category}"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Preparation Time -->
+                                <div class="mb-3">
+                                    <label for="preparationTimeMinutes" class="form-label">
+                                        <i class="bi bi-clock me-1"></i>
+                                        Preparation Time (minutes)
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="preparationTimeMinutes" 
+                                           th:field="*{preparationTimeMinutes}"
+                                           min="1"
+                                           placeholder="15">
+                                </div>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="col-md-6">
+                                <!-- Description -->
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">
+                                        <i class="bi bi-card-text me-1"></i>
+                                        Description
+                                    </label>
+                                    <textarea class="form-control" 
+                                              id="description" 
+                                              th:field="*{description}"
+                                              rows="4"
+                                              placeholder="Describe your menu item..."></textarea>
+                                    <div th:if="${#fields.hasErrors('description')}" class="text-danger small mt-1">
+                                        <span th:errors="*{description}"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Image Upload -->
+                                <div class="mb-3">
+                                    <label for="imageFile" class="form-label">
+                                        <i class="bi bi-image me-1"></i>
+                                        Item Image
+                                    </label>
+                                    <input type="file" 
+                                           class="form-control" 
+                                           id="imageFile" 
+                                           name="imageFile"
+                                           accept="image/*"
+                                           onchange="previewImage(this)">
+                                    <div class="mt-2">
+                                        <img id="imagePreview" 
+                                             th:src="${menuItem.imageUrl ?: '/images/default-food.jpg'}" 
+                                             alt="Preview" 
+                                             class="image-preview"
+                                             style="display: block;">
+                                    </div>
+                                </div>
+
+                                <!-- Availability -->
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               id="isAvailable" 
+                                               th:field="*{isAvailable}">
+                                        <label class="form-check-label" for="isAvailable">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Available for Order
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dietary Options -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-heart me-1"></i>
+                                Dietary Options
+                            </label>
+                            <div class="dietary-options">
+                                <div class="form-check form-check-custom">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="isVegetarian" 
+                                           th:field="*{isVegetarian}">
+                                    <label class="form-check-label" for="isVegetarian">
+                                        <i class="bi bi-leaf me-1"></i>
+                                        Vegetarian
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-custom">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="isVegan" 
+                                           th:field="*{isVegan}">
+                                    <label class="form-check-label" for="isVegan">
+                                        <i class="bi bi-heart me-1"></i>
+                                        Vegan
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-custom">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="isGlutenFree" 
+                                           th:field="*{isGlutenFree}">
+                                    <label class="form-check-label" for="isGlutenFree">
+                                        <i class="bi bi-shield-check me-1"></i>
+                                        Gluten Free
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-custom">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="isSpicy" 
+                                           th:field="*{isSpicy}">
+                                    <label class="form-check-label" for="isSpicy">
+                                        <i class="bi bi-fire me-1"></i>
+                                        Spicy
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between">
+                            <a href="/shop/dashboard" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-save">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span th:text="${isEdit ? 'Update Menu Item' : 'Add Menu Item'}">Save</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

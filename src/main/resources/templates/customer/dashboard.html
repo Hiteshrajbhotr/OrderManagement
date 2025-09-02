@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,20 +32,191 @@
         .bg-success-gradient { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
         .bg-warning-gradient { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
         .bg-info-gradient { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .dashboard-switcher {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 25px;
-            color: white;
+        /* Dashboard switcher CSS removed - no longer needed for customers */
+        
+        /* Floating Cart Button Styles */
+        .floating-cart-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1040;
             transition: all 0.3s ease;
         }
-        .dashboard-switcher:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+        
+        /* Hide floating button when offcanvas is open */
+        .offcanvas.show ~ .floating-cart-btn {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
         }
-        .dashboard-switcher.active {
-            background: rgba(255, 255, 255, 0.3);
+        
+        .floating-cart-btn button {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            width: 140px !important;
+            height: 60px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+        }
+        
+        .floating-cart-btn button:hover {
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+            /* Removed transform: scale(1.1) to prevent size changes */
+        }
+        
+        /* Enhanced Cart Badge Styles */
+        .floating-cart-btn .badge {
+            font-size: 16px !important;
+            font-weight: 900 !important;
+            min-width: 32px !important;
+            height: 32px !important;
+            line-height: 32px !important;
+            border: 3px solid #ffffff !important;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+            animation: bounce 1s ease-in-out;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+            color: white !important;
+            z-index: 1055 !important;
+            position: relative !important;
+        }
+        
+        /* Badge visibility control */
+        .floating-cart-badge.badge-visible {
+            display: inline !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .floating-cart-badge.badge-hidden {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        /* Pulse animation removed to prevent button size changes */
+        
+        /* Back to Admin Dashboard button styling */
+        .btn-admin-back {
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-admin-back:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            text-decoration: none;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+            40% { transform: translateY(-5px) scale(1.1); }
+            60% { transform: translateY(-3px) scale(1.05); }
+        }
+        
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .floating-cart-btn {
+                bottom: 20px;
+                right: 20px;
+            }
+            .floating-cart-btn button {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+        }
+        
+        /* Menu Item Cards */
+        .menu-item-card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+        
+        .menu-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .menu-item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .price-tag {
+            background: linear-gradient(135deg, #28a745, #20c997);
             color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .category-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .dietary-info .badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+        }
+        
+        /* Cart Offcanvas */
+        .offcanvas {
+            width: 400px !important;
+        }
+        
+        .cart-item {
+            transition: all 0.3s ease;
+        }
+        
+        .cart-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .cart-item-image {
+            border: 2px solid #e9ecef;
+        }
+        
+        /* Filter dropdown */
+        #categoryFilter {
+            min-width: 150px;
+        }
+        
+        /* Cart button styling */
+        .btn-cart {
+            position: relative;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .offcanvas {
+                width: 100% !important;
+            }
+            
+            .menu-item-image {
+                height: 150px;
+            }
         }
     </style>
 </head>
@@ -57,25 +228,14 @@
                 Customer Dashboard
             </a>
             
-            <!-- Dashboard Switcher -->
-            <div class="navbar-nav mx-auto">
-                <div class="dropdown">
-                    <button class="btn dashboard-switcher dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-grid-3x3-gap-fill me-2"></i>
-                        Switch Dashboard
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/admin/dashboard">
-                            <i class="bi bi-shield-fill me-2"></i>Admin Dashboard
-                        </a></li>
-                        <li><a class="dropdown-item" href="/shop/dashboard">
-                            <i class="bi bi-shop me-2"></i>Shop Dashboard
-                        </a></li>
-                        <li><a class="dropdown-item active" href="/customer/dashboard">
-                            <i class="bi bi-person-fill me-2"></i>Customer Dashboard
-                        </a></li>
-                    </ul>
-                </div>
+            <!-- Dashboard Switcher removed for security - customers should only access their own dashboard -->
+            
+            <!-- Back to Dashboard button for Admin users -->
+            <div class="navbar-nav mx-auto" sec:authorize="hasRole('ADMIN')">
+                <a class="btn btn-light btn-sm shadow-sm rounded-pill px-3 py-2 btn-admin-back" href="/admin/dashboard" style="color: #0d6efd; font-weight: 500; border: 1px solid rgba(13, 110, 253, 0.2);">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Back to Admin Dashboard
+                </a>
             </div>
             
             <div class="navbar-nav ms-auto">
@@ -107,23 +267,23 @@
                     <i class="bi bi-person-fill me-2"></i>
                     Customer Dashboard
                 </h2>
-                <p class="text-muted">View and manage customer information</p>
+                <p class="text-muted">Browse menu items and manage your cart</p>
             </div>
             <div class="col-md-4 text-end">
-                <!-- Dashboard actions can be added here if needed -->
+                <!-- Top View Cart button removed - using floating cart button instead -->
             </div>
         </div>
 
-        <!-- Statistics Cards -->
+        <!-- Cart Summary Cards -->
         <div class="row mb-5">
             <div class="col-md-3 mb-3">
                 <div class="card dashboard-card h-100">
                     <div class="card-body text-center">
                         <div class="stat-icon bg-primary-gradient mx-auto mb-3">
-                            <i class="bi bi-people-fill"></i>
+                            <i class="bi bi-cart-fill"></i>
                         </div>
-                        <h3 class="card-title" th:text="${totalCustomers ?: 0}">0</h3>
-                        <p class="card-text text-muted">Total Customers</p>
+                        <h3 class="card-title" data-stat="totalCartItems" th:text="${totalCartItems ?: 0}">0</h3>
+                        <p class="card-text text-muted">Items in Cart</p>
                     </div>
                 </div>
             </div>
@@ -132,10 +292,10 @@
                 <div class="card dashboard-card h-100">
                     <div class="card-body text-center">
                         <div class="stat-icon bg-success-gradient mx-auto mb-3">
-                            <i class="bi bi-person-check-fill"></i>
+                            <i class="bi bi-currency-dollar"></i>
                         </div>
-                        <h3 class="card-title" th:text="${activeCustomers ?: 0}">0</h3>
-                        <p class="card-text text-muted">Active Customers</p>
+                        <h3 class="card-title" data-stat="cartTotal" th:text="${cartTotal ?: '$0.00'}">$0.00</h3>
+                        <p class="card-text text-muted">Cart Total</p>
                     </div>
                 </div>
             </div>
@@ -144,10 +304,10 @@
                 <div class="card dashboard-card h-100">
                     <div class="card-body text-center">
                         <div class="stat-icon bg-warning-gradient mx-auto mb-3">
-                            <i class="bi bi-geo-alt-fill"></i>
+                            <i class="bi bi-shop-window"></i>
                         </div>
-                        <h3 class="card-title" th:text="${totalLocations ?: 0}">0</h3>
-                        <p class="card-text text-muted">Locations</p>
+                        <h3 class="card-title" th:text="${availableShops ?: 0}">0</h3>
+                        <p class="card-text text-muted">Available Shops</p>
                     </div>
                 </div>
             </div>
@@ -156,110 +316,172 @@
                 <div class="card dashboard-card h-100">
                     <div class="card-body text-center">
                         <div class="stat-icon bg-info-gradient mx-auto mb-3">
-                            <i class="bi bi-calendar-event-fill"></i>
+                            <i class="bi bi-bag-check-fill"></i>
                         </div>
-                        <h3 class="card-title" th:text="${recentRegistrations ?: 0}">0</h3>
-                        <p class="card-text text-muted">Recent Registrations</p>
+                        <h3 class="card-title" th:text="${totalOrders ?: 0}">0</h3>
+                        <p class="card-text text-muted">Total Orders</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
+        <!-- Menu Items Browsing -->
         <div class="row mb-4">
             <div class="col">
                 <div class="card dashboard-card">
-                    <div class="card-header bg-transparent">
+                    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="bi bi-lightning-fill me-2"></i>
-                            Quick Actions
+                            <i class="bi bi-menu-button-wide-fill me-2"></i>
+                            Browse Menu Items
                         </h5>
+                        <div>
+                            <select class="form-select form-select-sm" id="categoryFilter" onchange="filterByCategory()">
+                                <option value="">All Categories</option>
+                                <option value="APPETIZER">Appetizers</option>
+                                <option value="MAIN_COURSE">Main Course</option>
+                                <option value="DESSERT">Desserts</option>
+                                <option value="BEVERAGE">Beverages</option>
+                                <option value="SNACK">Snacks</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3 mb-2">
-                                <a href="/customers" class="btn btn-outline-primary w-100">
-                                    <i class="bi bi-people-fill me-2"></i>
-                                    View Customers
-                                </a>
+                        <!-- Menu Items Grid -->
+                        <div class="row" th:if="${menuItems != null and !#lists.isEmpty(menuItems)}">
+                            <div class="col-md-4 col-lg-3 mb-4" th:each="item : ${menuItems}">
+                                <div class="card menu-item-card h-100" th:attr="data-category=${item.category}">
+                                    <img th:src="${item.imageUrl ?: '/images/default-food.jpg'}" 
+                                         th:alt="${item.itemName}" 
+                                         class="menu-item-image">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="card-title mb-0" th:text="${item.itemName}">Pizza Margherita</h6>
+                                            <span class="price-tag" th:text="${item.formattedPrice}">$12.99</span>
+                                        </div>
+                                        <p class="card-text text-muted small mb-2" th:text="${item.description}">
+                                            Delicious pizza with fresh tomatoes and mozzarella
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="badge category-badge" 
+                                                  th:classappend="${item.category.name() == 'APPETIZER'} ? 'bg-info' : 
+                                                                 (${item.category.name() == 'MAIN_COURSE'} ? 'bg-primary' : 
+                                                                 (${item.category.name() == 'DESSERT'} ? 'bg-warning' : 'bg-secondary'))"
+                                                  th:text="${item.category}">MAIN_COURSE</span>
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                <span th:text="${item.preparationTimeMinutes ?: 'N/A'}">15</span> min
+                                            </small>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="dietary-info">
+                                                <span th:if="${item.isVegetarian}" class="badge bg-success me-1" title="Vegetarian">
+                                                    <i class="bi bi-leaf"></i>
+                                                </span>
+                                                <span th:if="${item.isVegan}" class="badge bg-primary me-1" title="Vegan">
+                                                    <i class="bi bi-heart"></i>
+                                                </span>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-success" 
+                                                    th:onclick="'addToCart(' + ${item.id} + ')'"
+                                                    th:disabled="${!item.isAvailable}">
+                                                <i class="bi bi-cart-plus me-1"></i>
+                                                <span th:text="${item.isAvailable} ? 'Add to Cart' : 'Out of Stock'">Add to Cart</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-3 mb-2">
-                                <a href="/customers/new" class="btn btn-outline-success w-100">
-                                    <i class="bi bi-person-plus-fill me-2"></i>
-                                    Add Customer
-                                </a>
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <a href="/profile" class="btn btn-outline-info w-100">
-                                    <i class="bi bi-person-circle me-2"></i>
-                                    My Profile
-                                </a>
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <a href="/help" class="btn btn-outline-warning w-100">
-                                    <i class="bi bi-question-circle me-2"></i>
-                                    Help & Support
-                                </a>
-                            </div>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div th:unless="${menuItems != null and !#lists.isEmpty(menuItems)}" class="text-center py-5">
+                            <i class="bi bi-menu-button-wide display-1 text-muted"></i>
+                            <h4 class="mt-3">No Menu Items Available</h4>
+                            <p class="text-muted">Check back later for delicious menu items from our partner restaurants.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Recent Students -->
-        <div class="row">
-            <div class="col">
-                <div class="card dashboard-card">
-                    <div class="card-header bg-transparent">
-                        <h5 class="mb-0">
-                            <i class="bi bi-clock-history me-2"></i>
-                            Recent Customers
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Age</th>
-                                        <th>Registration Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="customer : ${recentCustomers}" th:if="${recentCustomers}">
-                                        <td th:text="${customer.name}">John Doe</td>
-                                        <td th:text="${customer.email}">john@example.com</td>
-                                        <td th:text="${customer.age}">22</td>
-                                        <td th:text="${#temporals.format(customer.registrationDate, 'MMM dd, yyyy')}">Jan 01, 2024</td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a th:href="@{/customers/{id}(id=${customer.id})}" class="btn btn-sm btn-outline-info">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
-                                                <a th:href="@{/customers/{id}/edit(id=${customer.id})}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr th:unless="${recentCustomers}">
-                                        <td colspan="5" class="text-center text-muted">No recent customers found</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-center mt-3">
-                            <a href="/customers" class="btn btn-primary">
-                                View All Customers
-                                <i class="bi bi-arrow-right ms-2"></i>
-                            </a>
+    <!-- Floating Cart Button -->
+    <div class="floating-cart-btn">
+        <button type="button" class="btn btn-primary btn-lg position-relative shadow-lg" 
+                data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" 
+                style="border-radius: 50px; padding: 15px 20px;">
+            <i class="bi bi-cart-fill me-2"></i>
+            <span class="d-none d-md-inline">View Cart</span>
+            <span class="d-md-none">Cart</span>
+        </button>
+    </div>
+
+    <!-- Cart Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="cartOffcanvasLabel">
+                <i class="bi bi-cart-fill me-2"></i>
+                Shopping Cart
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <!-- Cart Items -->
+            <div id="cartItemsContainer">
+                <div th:if="${cartItems != null and !#lists.isEmpty(cartItems)}">
+                    <div class="cart-item mb-3 p-3 border rounded" th:each="cartItem : ${cartItems}">
+                        <div class="d-flex align-items-center">
+                            <img th:src="${cartItem.menuItem.imageUrl ?: '/images/default-food.jpg'}" 
+                                 th:alt="${cartItem.menuItem.itemName}" 
+                                 class="cart-item-image me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1" th:text="${cartItem.menuItem.itemName}">Pizza Margherita</h6>
+                                <p class="mb-1 text-muted small" th:text="${cartItem.formattedUnitPrice}">$12.99</p>
+                                <div class="d-flex align-items-center">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                            th:onclick="'updateCartQuantity(' + ${cartItem.id} + ', ' + (${cartItem.quantity} - 1) + ')'">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <span class="mx-2" th:text="${cartItem.quantity}">1</span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                            th:onclick="'updateCartQuantity(' + ${cartItem.id} + ', ' + (${cartItem.quantity} + 1) + ')'">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2" 
+                                            th:onclick="'removeFromCart(' + ${cartItem.id} + ')'">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <strong th:text="${cartItem.formattedSubtotal}">$12.99</strong>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Empty Cart State -->
+                <div th:unless="${cartItems != null and !#lists.isEmpty(cartItems)}" class="text-center py-5">
+                    <i class="bi bi-cart-x display-4 text-muted"></i>
+                    <h5 class="mt-3">Your cart is empty</h5>
+                    <p class="text-muted">Add some delicious items to get started!</p>
+                </div>
+            </div>
+            
+            <!-- Cart Total -->
+            <div th:if="${cartItems != null and !#lists.isEmpty(cartItems)}" class="border-top pt-3 mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Total:</h5>
+                    <h5 class="mb-0" th:text="${cartTotal ?: '$0.00'}">$0.00</h5>
+                </div>
+                <button type="button" class="btn btn-success w-100 mb-2" onclick="proceedToCheckout()">
+                    <i class="bi bi-credit-card me-2"></i>
+                    Proceed to Checkout
+                </button>
+                <button type="button" class="btn btn-outline-danger w-100" onclick="clearCart()">
+                    <i class="bi bi-trash me-2"></i>
+                    Clear Cart
+                </button>
             </div>
         </div>
     </div>
@@ -268,6 +490,11 @@
     <script>
         // Add some interactivity
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize cart badge with current cart count immediately
+            initializeCartBadge();
+            // Then update with fresh data from server
+            updateCartUI();
+            
             // Animate statistics cards on load
             const cards = document.querySelectorAll('.dashboard-card');
             cards.forEach((card, index) => {
@@ -282,7 +509,357 @@
                     }, 100);
                 }, index * 100);
             });
+            
+            // Handle floating cart button visibility when offcanvas opens/closes
+            const cartOffcanvas = document.getElementById('cartOffcanvas');
+            const floatingCartBtn = document.querySelector('.floating-cart-btn');
+            
+            if (cartOffcanvas && floatingCartBtn) {
+                cartOffcanvas.addEventListener('show.bs.offcanvas', function () {
+                    floatingCartBtn.style.opacity = '0';
+                    floatingCartBtn.style.pointerEvents = 'none';
+                    floatingCartBtn.style.transform = 'scale(0.8)';
+                });
+                
+                cartOffcanvas.addEventListener('hide.bs.offcanvas', function () {
+                    floatingCartBtn.style.opacity = '1';
+                    floatingCartBtn.style.pointerEvents = 'auto';
+                    floatingCartBtn.style.transform = 'scale(1)';
+                });
+            }
         });
+
+        // Initialize cart badge with server-side data
+        function initializeCartBadge() {
+            const floatingCartBadge = document.getElementById('floatingCartBadge');
+            const totalCartItems = [[${totalCartItems ?: 0}]];
+            
+            if (floatingCartBadge) {
+                floatingCartBadge.textContent = totalCartItems;
+                if (totalCartItems > 0) {
+                    floatingCartBadge.classList.add('badge-visible');
+                    floatingCartBadge.classList.remove('badge-hidden');
+                    floatingCartBadge.style.display = 'inline';
+                } else {
+                    floatingCartBadge.classList.add('badge-hidden');
+                    floatingCartBadge.classList.remove('badge-visible');
+                    floatingCartBadge.style.display = 'none';
+                }
+            }
+        }
+
+        // Cart management functions
+        function addToCart(menuItemId) {
+            fetch('/customer/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    menuItemId: menuItemId,
+                    quantity: 1
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Show success message
+                    showToast('Item added to cart successfully!', 'success');
+                    // Update entire cart UI dynamically
+                    updateCartUI();
+                } else {
+                    showToast('Error adding item to cart', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error adding item to cart', 'error');
+            });
+        }
+
+        function updateCartQuantity(cartItemId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(cartItemId);
+                return;
+            }
+
+            fetch(`/customer/cart/update/${cartItemId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    quantity: newQuantity
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    updateCartUI();
+                    showToast('Cart updated successfully!', 'success');
+                } else {
+                    showToast('Error updating cart', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error updating cart', 'error');
+            });
+        }
+
+        function removeFromCart(cartItemId) {
+            if (confirm('Are you sure you want to remove this item from your cart?')) {
+                fetch(`/customer/cart/remove/${cartItemId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        updateCartUI();
+                        showToast('Item removed from cart!', 'success');
+                    } else {
+                        showToast('Error removing item from cart', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error removing item from cart', 'error');
+                });
+            }
+        }
+
+        function clearCart() {
+            if (confirm('Are you sure you want to clear your entire cart?')) {
+                fetch('/customer/cart/clear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        updateCartUI();
+                        showToast('Cart cleared successfully!', 'success');
+                    } else {
+                        showToast('Error clearing cart', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error clearing cart', 'error');
+                });
+            }
+        }
+
+        function proceedToCheckout() {
+            // Redirect to checkout page
+            window.location.href = '/customer/checkout';
+        }
+
+        // Category filter function
+        function filterByCategory() {
+            const selectedCategory = document.getElementById('categoryFilter').value;
+            const menuItems = document.querySelectorAll('[data-category]');
+            
+            menuItems.forEach(item => {
+                if (selectedCategory === '' || item.getAttribute('data-category') === selectedCategory) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Update entire cart UI dynamically
+        function updateCartUI() {
+            fetch('/customer/cart/data')
+            .then(response => response.json())
+            .then(data => {
+                updateCartBadge(data.totalItems);
+                updateCartSidebar(data);
+                updateCartStats(data);
+            })
+            .catch(error => {
+                console.error('Error updating cart UI:', error);
+            });
+        }
+
+        // Update cart badge (both header and floating)
+        function updateCartBadge(totalItems) {
+            // Update floating cart badge
+            const floatingCartBadge = document.getElementById('floatingCartBadge');
+            
+            if (totalItems > 0) {
+                if (floatingCartBadge) {
+                    floatingCartBadge.textContent = totalItems;
+                    floatingCartBadge.classList.remove('badge-hidden');
+                    floatingCartBadge.classList.add('badge-visible');
+                } else {
+                    // Create floating badge if it doesn't exist
+                    const floatingCartButton = document.querySelector('.floating-cart-btn button');
+                    if (floatingCartButton) {
+                        const newBadge = document.createElement('span');
+                        newBadge.id = 'floatingCartBadge';
+                        newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-6 fw-bold floating-cart-badge badge-visible';
+                        newBadge.style.cssText = 'min-width: 32px; height: 32px; line-height: 32px; font-size: 16px !important; font-weight: 900 !important; border: 3px solid #ffffff !important; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4) !important; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important; color: white !important; z-index: 1055 !important;';
+                        newBadge.textContent = totalItems;
+                        floatingCartButton.appendChild(newBadge);
+                    }
+                }
+            } else {
+                if (floatingCartBadge) {
+                    floatingCartBadge.classList.remove('badge-visible');
+                    floatingCartBadge.classList.add('badge-hidden');
+                }
+            }
+            
+            // Also update header cart badge if it exists
+            const cartBadge = document.getElementById('cartBadge');
+            if (cartBadge) {
+                if (totalItems > 0) {
+                    cartBadge.textContent = totalItems;
+                    cartBadge.style.display = 'inline';
+                } else {
+                    cartBadge.style.display = 'none';
+                }
+            }
+        }
+
+        // Update cart sidebar content
+        function updateCartSidebar(data) {
+            const cartContainer = document.getElementById('cartItemsContainer');
+            
+            if (data.isEmpty || data.cartItems.length === 0) {
+                // Show empty cart state
+                cartContainer.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-cart-x display-4 text-muted"></i>
+                        <h5 class="mt-3">Your cart is empty</h5>
+                        <p class="text-muted">Add some delicious items to get started!</p>
+                    </div>
+                `;
+            } else {
+                // Show cart items
+                let cartItemsHtml = '<div>';
+                data.cartItems.forEach(item => {
+                    cartItemsHtml += `
+                        <div class="cart-item mb-3 p-3 border rounded">
+                            <div class="d-flex align-items-center">
+                                <img src="${item.imageUrl}" alt="${item.itemName}" 
+                                     class="cart-item-image me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">${item.itemName}</h6>
+                                    <p class="mb-1 text-muted small">${item.formattedUnitPrice}</p>
+                                    <div class="d-flex align-items-center">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                        <span class="mx-2">${item.quantity}</span>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger ms-2" 
+                                                onclick="removeFromCart(${item.id})">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <strong>${item.formattedSubtotal}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                cartItemsHtml += '</div>';
+                cartContainer.innerHTML = cartItemsHtml;
+            }
+            
+            // Update cart total section
+            updateCartTotal(data);
+        }
+
+        // Update cart total section
+        function updateCartTotal(data) {
+            const cartOffcanvas = document.querySelector('#cartOffcanvas .offcanvas-body');
+            let cartTotalSection = cartOffcanvas.querySelector('.border-top.pt-3.mt-3');
+            
+            if (data.isEmpty || data.cartItems.length === 0) {
+                // Remove cart total section if cart is empty
+                if (cartTotalSection) {
+                    cartTotalSection.remove();
+                }
+            } else {
+                // Create or update cart total section
+                if (!cartTotalSection) {
+                    cartTotalSection = document.createElement('div');
+                    cartTotalSection.className = 'border-top pt-3 mt-3';
+                    cartOffcanvas.appendChild(cartTotalSection);
+                }
+                
+                cartTotalSection.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Total:</h5>
+                        <h5 class="mb-0">${data.formattedTotal}</h5>
+                    </div>
+                    <button type="button" class="btn btn-success w-100 mb-2" onclick="proceedToCheckout()">
+                        <i class="bi bi-credit-card me-2"></i>
+                        Proceed to Checkout
+                    </button>
+                    <button type="button" class="btn btn-outline-danger w-100" onclick="clearCart()">
+                        <i class="bi bi-trash me-2"></i>
+                        Clear Cart
+                    </button>
+                `;
+            }
+        }
+
+        // Update cart statistics in dashboard cards
+        function updateCartStats(data) {
+            // Update total items in dashboard card
+            const totalItemsElement = document.querySelector('[data-stat="totalCartItems"]');
+            if (totalItemsElement) {
+                totalItemsElement.textContent = data.totalItems;
+            }
+            
+            // Update total amount in dashboard card  
+            const totalAmountElement = document.querySelector('[data-stat="cartTotal"]');
+            if (totalAmountElement) {
+                totalAmountElement.textContent = data.formattedTotal;
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type) {
+            // Remove any existing toasts to prevent overlap
+            const existingToasts = document.querySelectorAll('.cart-toast');
+            existingToasts.forEach(toast => toast.remove());
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed cart-toast`;
+            toast.style.top = '20px';
+            toast.style.right = '20px';
+            toast.style.zIndex = '9999';
+            toast.style.minWidth = '300px';
+            toast.innerHTML = `
+                <i class="bi bi-check-circle-fill me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto remove after 2 seconds (shorter for better UX)
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 150);
+                }
+            }, 2000);
+        }
     </script>
 </body>
 </html>

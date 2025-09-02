@@ -20,6 +20,9 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     @Query("SELECT m FROM MenuItem m WHERE m.shop.id = :shopId AND m.isAvailable = true")
     List<MenuItem> findAvailableItemsByShopId(@Param("shopId") Long shopId);
     
+    // Find all available menu items (for customer dashboard)
+    List<MenuItem> findByIsAvailableTrue();
+    
     // Find menu items by category
     List<MenuItem> findByCategory(MenuCategory category);
     

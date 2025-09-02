@@ -31,7 +31,7 @@ public class Shop {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     
-    @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Please provide a valid phone number")
+    @Pattern(regexp = "^(\\+91[\\-\\s]?)?[6-9]\\d{9}$", message = "Please provide a valid Indian mobile number (10 digits starting with 6-9, optionally prefixed with +91)")
     @Column(name = "phone_number")
     private String phoneNumber;
     
@@ -64,6 +64,9 @@ public class Shop {
     @Column(name = "description")
     private String description;
     
+    @Column(name = "image_url")
+    private String imageUrl;
+    
     @NotNull(message = "Shop type is required")
     @Enumerated(EnumType.STRING)
     @Column(name = "shop_type", nullable = false)
@@ -84,6 +87,11 @@ public class Shop {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    // One-to-One relationship with User (shop owner)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_user_id", unique = true)
+    private User ownerUser;
     
     // One-to-Many relationship with MenuItem
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -196,6 +204,14 @@ public class Shop {
         this.description = description;
     }
     
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+    
     public ShopType getShopType() {
         return shopType;
     }
@@ -242,6 +258,14 @@ public class Shop {
     
     public void setMenuItems(List<MenuItem> menuItems) {
         this.menuItems = menuItems;
+    }
+    
+    public User getOwnerUser() {
+        return ownerUser;
+    }
+    
+    public void setOwnerUser(User ownerUser) {
+        this.ownerUser = ownerUser;
     }
     
     // Helper methods

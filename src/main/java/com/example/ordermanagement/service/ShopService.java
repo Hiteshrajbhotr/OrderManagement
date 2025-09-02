@@ -5,6 +5,8 @@ import com.example.ordermanagement.dto.ShopResponse;
 import com.example.ordermanagement.model.Shop;
 import com.example.ordermanagement.model.ShopStatus;
 import com.example.ordermanagement.model.ShopType;
+import com.example.ordermanagement.model.User;
+import com.example.ordermanagement.model.Role;
 import com.example.ordermanagement.repository.ShopRepository;
 import com.example.ordermanagement.repository.MenuItemRepository;
 import org.slf4j.Logger;
@@ -27,18 +29,24 @@ public class ShopService implements ShopServiceInterface {
     
     private final ShopRepository shopRepository;
     private final MenuItemRepository menuItemRepository;
+    private final UserService userService;
     
     @Autowired
-    public ShopService(ShopRepository shopRepository, MenuItemRepository menuItemRepository) {
+    public ShopService(ShopRepository shopRepository, MenuItemRepository menuItemRepository, UserService userService) {
         this.shopRepository = shopRepository;
         this.menuItemRepository = menuItemRepository;
+        this.userService = userService;
     }
     
     @Override
     public ShopResponse createShop(ShopRequest request) {
-        // Validate email uniqueness
+        // Validate email uniqueness for both shop and user
         if (shopRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists: " + request.getEmail());
+        }
+        
+        if (userService.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists in user accounts: " + request.getEmail());
         }
         
         // Validate shop name uniqueness in the same city
@@ -46,6 +54,24 @@ public class ShopService implements ShopServiceInterface {
             throw new RuntimeException("Shop name already exists in " + request.getCity());
         }
         
+        // Generate unique username for shop owner
+        String baseUsername = generateShopOwnerUsername(request.getShopName(), request.getOwnerName());
+        String uniqueUsername = ensureUniqueUsername(baseUsername);
+        
+        // Create shop owner user account
+        String defaultPassword = "shop123"; // Default password - should be changed on first login
+        User shopOwner = userService.createUser(
+            uniqueUsername,
+            request.getEmail(),
+            defaultPassword,
+            extractFirstName(request.getOwnerName()),
+            extractLastName(request.getOwnerName()),
+            Role.SHOP
+        );
+        
+        logger.info("Created shop owner account: {} for shop: {}", uniqueUsername, request.getShopName());
+        
+        // Create shop and link with owner
         Shop shop = new Shop();
         shop.setShopName(request.getShopName());
         shop.setOwnerName(request.getOwnerName());
@@ -57,11 +83,20 @@ public class ShopService implements ShopServiceInterface {
         shop.setPincode(request.getPincode());
         shop.setAddress(request.getAddress());
         shop.setDescription(request.getDescription());
+        shop.setImageUrl(request.getImageUrl());
         shop.setShopType(request.getShopType());
         shop.setStatus(ShopStatus.PENDING); // New shops start as pending
         shop.setRegistrationDate(LocalDateTime.now());
+        shop.setOwnerUser(shopOwner); // Link shop with owner user
         
         Shop savedShop = shopRepository.save(shop);
+        
+        // Update the user's owned shop reference
+        shopOwner.setOwnedShop(savedShop);
+        userService.updateUser(shopOwner.getId(), shopOwner.getFirstName(), shopOwner.getLastName(), shopOwner.getEmail());
+        
+        logger.info("Created shop: {} with owner account: {}", savedShop.getShopName(), uniqueUsername);
+        
         return convertToResponse(savedShop);
     }
     
@@ -109,6 +144,7 @@ public class ShopService implements ShopServiceInterface {
         existingShop.setPincode(request.getPincode());
         existingShop.setAddress(request.getAddress());
         existingShop.setDescription(request.getDescription());
+        existingShop.setImageUrl(request.getImageUrl());
         existingShop.setShopType(request.getShopType());
         
         Shop updatedShop = shopRepository.save(existingShop);
@@ -314,6 +350,24 @@ public class ShopService implements ShopServiceInterface {
         return convertToResponse(shop);
     }
     
+    /**
+     * Get shop owned by a specific user
+     */
+    @Transactional(readOnly = true)
+    public ShopResponse getShopByOwnerUserId(Long userId) {
+        Shop shop = shopRepository.findByOwnerUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Shop not found for user ID: " + userId));
+        return convertToResponse(shop);
+    }
+    
+    /**
+     * Check if user owns a shop
+     */
+    @Transactional(readOnly = true)
+    public boolean userOwnsShop(Long userId) {
+        return shopRepository.existsByOwnerUserId(userId);
+    }
+    
     // Helper method to convert Shop entity to ShopResponse DTO
     private ShopResponse convertToResponse(Shop shop) {
         ShopResponse response = new ShopResponse(
@@ -334,6 +388,7 @@ public class ShopService implements ShopServiceInterface {
                 shop.getCreatedAt(),
                 shop.getUpdatedAt()
         );
+        response.setImageUrl(shop.getImageUrl());
         
         // Set menu items count
         long menuItemsCount = menuItemRepository.countByShopId(shop.getId());
@@ -426,5 +481,56 @@ public class ShopService implements ShopServiceInterface {
     @Transactional(readOnly = true)
     public long getShopCountByType(ShopType shopType) {
         return shopRepository.countByShopType(shopType);
+    }
+    
+    // Helper methods for unique shop owner account creation
+    private String generateShopOwnerUsername(String shopName, String ownerName) {
+        // Clean and format shop name and owner name
+        String cleanShopName = shopName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        String cleanOwnerName = ownerName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        
+        // Limit length to avoid overly long usernames
+        if (cleanShopName.length() > 10) {
+            cleanShopName = cleanShopName.substring(0, 10);
+        }
+        if (cleanOwnerName.length() > 8) {
+            cleanOwnerName = cleanOwnerName.substring(0, 8);
+        }
+        
+        return cleanShopName + "_" + cleanOwnerName;
+    }
+    
+    private String ensureUniqueUsername(String baseUsername) {
+        String username = baseUsername;
+        int counter = 1;
+        
+        while (userService.existsByUsername(username)) {
+            username = baseUsername + counter;
+            counter++;
+        }
+        
+        return username;
+    }
+    
+    private String extractFirstName(String fullName) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "Shop";
+        }
+        
+        String[] parts = fullName.trim().split("\\s+");
+        return parts[0];
+    }
+    
+    private String extractLastName(String fullName) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "Owner";
+        }
+        
+        String[] parts = fullName.trim().split("\\s+");
+        if (parts.length > 1) {
+            return String.join(" ", java.util.Arrays.copyOfRange(parts, 1, parts.length));
+        }
+        
+        return "Owner";
     }
 }

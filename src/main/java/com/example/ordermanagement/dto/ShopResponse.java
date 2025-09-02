@@ -18,6 +18,7 @@ public class ShopResponse {
     private String pincode;
     private String address;
     private String description;
+    private String imageUrl;
     private ShopType shopType;
     private ShopStatus status;
     private LocalDateTime registrationDate;
@@ -138,6 +139,14 @@ public class ShopResponse {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
     
     public ShopType getShopType() {

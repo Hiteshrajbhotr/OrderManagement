@@ -17,7 +17,7 @@ public class ShopRequest {
     @Email(message = "Please provide a valid email address")
     private String email;
     
-    @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Please provide a valid phone number")
+    @Pattern(regexp = "^(\\+91[\\-\\s]?)?[6-9]\\d{9}$", message = "Please provide a valid Indian mobile number (10 digits starting with 6-9, optionally prefixed with +91)")
     private String phoneNumber;
     
     @NotBlank(message = "City is required")
@@ -42,6 +42,8 @@ public class ShopRequest {
     
     @Size(max = 500, message = "Description must not exceed 500 characters")
     private String description;
+    
+    private String imageUrl;
     
     @NotNull(message = "Shop type is required")
     private ShopType shopType;
@@ -143,6 +145,14 @@ public class ShopRequest {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
     
     public ShopType getShopType() {

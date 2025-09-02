@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -36,7 +37,7 @@ public class Customer {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Size(max = 20, message = "Phone number cannot exceed 20 characters")
+    @Pattern(regexp = "^(\\+91[\\-\\s]?)?[6-9]\\d{9}$", message = "Please provide a valid Indian mobile number (10 digits starting with 6-9, optionally prefixed with +91)")
     @Column(name = "phone_number")
     private String phoneNumber;
 

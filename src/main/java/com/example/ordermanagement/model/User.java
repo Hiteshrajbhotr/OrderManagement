@@ -60,6 +60,10 @@ public class User implements UserDetails {
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
+    
+    // One-to-One relationship with Shop (for shop owners)
+    @OneToOne(mappedBy = "ownerUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Shop ownedShop;
 
     // Default constructor
     public User() {}
@@ -203,6 +207,14 @@ public class User implements UserDetails {
 
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
+    }
+    
+    public Shop getOwnedShop() {
+        return ownedShop;
+    }
+    
+    public void setOwnedShop(Shop ownedShop) {
+        this.ownedShop = ownedShop;
     }
 
     // Helper methods
